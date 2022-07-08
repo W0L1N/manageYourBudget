@@ -1,4 +1,4 @@
-package com.kacwol.manageYourBudget;
+package com.kacwol.manageYourBudget.category.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,5 +6,5 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class CategoryDto {
-    String name;
+    private String name;
 }
