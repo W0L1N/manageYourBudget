@@ -1,5 +1,6 @@
-package com.kacwol.manageYourBudget;
+package com.kacwol.manageYourBudget.category.model;
 
+import com.kacwol.manageYourBudget.User;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
