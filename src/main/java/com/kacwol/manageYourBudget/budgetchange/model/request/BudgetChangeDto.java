@@ -1,6 +1,6 @@
-package com.kacwol.manageYourBudget.budgetchange.model;
+package com.kacwol.manageYourBudget.budgetchange.model.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,7 +10,7 @@ public class BudgetChangeDto {
 
     private Long categoryId;
 
-    private LocalDateTime timestamp;
+    private LocalDate dateTime;
 
     private double value;
 

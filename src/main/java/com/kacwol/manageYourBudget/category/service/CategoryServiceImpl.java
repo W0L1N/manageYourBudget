@@ -4,6 +4,7 @@ import com.kacwol.manageYourBudget.User;
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.model.CategoryDto;
 import com.kacwol.manageYourBudget.exception.CategoryNotFoundException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public CategoryDto getCategoryDtoById(Long id) {
+        return mapper.entityToDto(getCategoryById(id));
+    }
+
+    @Override
     public void deleteCategoryById(Long id) {
         categoryRepo.deleteById(id);
+    }
+
+    @Override
+    public List<Category> getAllCategories() {
+        return categoryRepo.findAll();
     }
 }

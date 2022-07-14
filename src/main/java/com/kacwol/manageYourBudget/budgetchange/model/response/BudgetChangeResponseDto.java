@@ -1,17 +1,17 @@
-package com.kacwol.manageYourBudget.budgetchange.model;
+package com.kacwol.manageYourBudget.budgetchange.model.response;
 
 import com.kacwol.manageYourBudget.category.model.CategoryDto;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
 public class BudgetChangeResponseDto {
 
-    private CategoryDto categoryId;
+    private CategoryDto category;
 
-    private LocalDateTime timestamp;
+    private LocalDate dateTime;
 
     private double value;
 
