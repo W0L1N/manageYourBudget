@@ -1,19 +1,20 @@
 package com.kacwol.manageYourBudget.category.service;
 
-import com.kacwol.manageYourBudget.User;
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.model.CategoryDto;
+import org.springframework.security.core.Authentication;
+
 import java.util.List;
 
 public interface CategoryService {
 
-    void addCategory(CategoryDto category, User user);
+    void addCategory(Authentication authentication, String name);
 
-    Category getCategoryById(Long id);
+    Category getCategoryById(Authentication authentication, Long id);
 
-    CategoryDto getCategoryDtoById(Long id);
+    CategoryDto getCategoryDtoById(Authentication authentication, Long id);
 
-    void deleteCategoryById(Long id);
+    void deleteCategoryById(Authentication authentication, Long id);
 
-    List<Category> getAllCategories();
+    List<Category> getAllCategories(Authentication authentication);
 }

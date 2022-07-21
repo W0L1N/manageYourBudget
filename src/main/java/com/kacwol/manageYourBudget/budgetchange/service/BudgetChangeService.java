@@ -4,23 +4,24 @@ import com.kacwol.manageYourBudget.budgetchange.model.request.AllBudgetChangesBy
 import com.kacwol.manageYourBudget.budgetchange.model.BudgetChange;
 import com.kacwol.manageYourBudget.budgetchange.model.request.BudgetChangeDto;
 import com.kacwol.manageYourBudget.budgetchange.model.response.BudgetChangeResponseDto;
+import org.springframework.security.core.Authentication;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface BudgetChangeService {
 
-    void addBudgetChange(BudgetChangeDto budgetChange);
+    void addBudgetChange(Authentication authentication, BudgetChangeDto budgetChange);
 
-    BudgetChangeResponseDto getBudgetChangeById(Long id);
+    BudgetChangeResponseDto getBudgetChangeById(Authentication authentication, Long id);
 
-    void deleteBudgetChangeById(Long id);
+    void deleteBudgetChangeById(Authentication authentication, Long id);
 
-    List<BudgetChange> getAllBudgetChanges();
+    List<BudgetChange> getAllBudgetChanges(Authentication authentication);
 
-    List<BudgetChange> getAllByUserIdAndCategoryId(Long userId, Long categoryId);
+    List<BudgetChange> getAllByUserIdAndCategoryId(Authentication authentication, Long categoryId);
 
-    List<BudgetChange> getAllByUserIdAndCategoryIdBetweenDates(Long userId, AllBudgetChangesByCategoryAndTimeDto dto);
-    List<BudgetChange> getAllByUserIdBetweenDates(Long userId, LocalDate start, LocalDate end);
+    List<BudgetChange> getAllByUserIdAndCategoryIdBetweenDates(Authentication authentication, AllBudgetChangesByCategoryAndTimeDto dto);
 
+    List<BudgetChange> getAllByUserIdBetweenDates(Authentication authentication, LocalDate start, LocalDate end);
 }

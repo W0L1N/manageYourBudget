@@ -1,19 +1,28 @@
 package com.kacwol.manageYourBudget.category.service;
 
-import com.kacwol.manageYourBudget.User;
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.model.CategoryDto;
+import com.kacwol.manageYourBudget.user.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CategoryMapper {
 
+    private final UserService userService;
+
+    @Autowired
+    public CategoryMapper(UserService userService) {
+        this.userService = userService;
+    }
+
     public CategoryDto entityToDto(Category entity) {
         return new CategoryDto(entity.getName());
     }
 
-    public Category dtoToEntity(CategoryDto dto, User user) {
-        return new Category(dto.getName(), user);
+    public Category dtoToEntity(Authentication authentication, String name) {
+        return new Category(name, userService.getByUserName(authentication.getName()));
     }
 
 }
