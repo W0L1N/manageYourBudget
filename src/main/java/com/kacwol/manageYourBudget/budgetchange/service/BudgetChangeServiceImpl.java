@@ -1,5 +1,6 @@
 package com.kacwol.manageYourBudget.budgetchange.service;
 
+import com.kacwol.manageYourBudget.AuthService;
 import com.kacwol.manageYourBudget.budgetchange.BudgetChangeRepo;
 import com.kacwol.manageYourBudget.budgetchange.model.BudgetChange;
 import com.kacwol.manageYourBudget.budgetchange.model.request.AllBudgetChangesByCategoryAndTimeDto;
@@ -12,6 +13,7 @@ import com.kacwol.manageYourBudget.exception.BudgetChangeNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,47 +24,50 @@ public class BudgetChangeServiceImpl implements BudgetChangeService {
 
     private final CategoryServiceImpl categoryService;
 
+    private final AuthService authService;
+
     @Autowired
-    public BudgetChangeServiceImpl(BudgetChangeRepo budgetChangeRepo, BudgetChangeMapper mapper, CategoryServiceImpl categoryService) {
+    public BudgetChangeServiceImpl(BudgetChangeRepo budgetChangeRepo, BudgetChangeMapper mapper, CategoryServiceImpl categoryService, AuthService authService) {
         this.budgetChangeRepo = budgetChangeRepo;
         this.mapper = mapper;
         this.categoryService = categoryService;
+        this.authService = authService;
     }
 
     @Override
-    public void addBudgetChange(BudgetChangeDto budgetChange) {
-        Category category = categoryService.getCategoryById(budgetChange.getCategoryId());
+    public void addBudgetChange(Authentication authentication, BudgetChangeDto budgetChange) {
+        Category category = categoryService.getCategoryById(authentication, budgetChange.getCategoryId());
         budgetChangeRepo.save(mapper.dtoToEntity(budgetChange, category));
     }
 
     @Override
-    public BudgetChangeResponseDto getBudgetChangeById(Long id) {
-        BudgetChange change = budgetChangeRepo.findById(id).orElseThrow(BudgetChangeNotFoundException::new);
+    public BudgetChangeResponseDto getBudgetChangeById(Authentication authentication, Long id) {
+        BudgetChange change = budgetChangeRepo.findByIdAndUserId(id, authService.getId(authentication)).orElseThrow(BudgetChangeNotFoundException::new);
         return mapper.entityToResponseDto(change);
     }
 
     @Override
-    public void deleteBudgetChangeById(Long id) {
-        budgetChangeRepo.deleteById(id);
+    public void deleteBudgetChangeById(Authentication authentication, Long id) {
+        budgetChangeRepo.deleteByIdAndUserId(id, authService.getId(authentication));
     }
 
     @Override
-    public List<BudgetChange> getAllBudgetChanges() {
-        return budgetChangeRepo.findAll();
+    public List<BudgetChange> getAllBudgetChanges(Authentication authentication) {
+        return budgetChangeRepo.findAllByUserId(authService.getId(authentication));
     }
 
     @Override
-    public List<BudgetChange> getAllByUserIdAndCategoryId(Long userId, Long categoryId) {
-        return budgetChangeRepo.findAllByUserIdAndCategoryId(userId, categoryId);
+    public List<BudgetChange> getAllByUserIdAndCategoryId(Authentication authentication, Long categoryId) {
+        return budgetChangeRepo.findAllByUserIdAndCategoryId(authService.getId(authentication), categoryId);
     }
 
     @Override
-    public List<BudgetChange> getAllByUserIdAndCategoryIdBetweenDates(Long userId, AllBudgetChangesByCategoryAndTimeDto dto) {
-        return budgetChangeRepo.findAllByUserIdAndCategoryIdAndDateTimeBetween(userId, dto.getCategoryId(), dto.getStart(), dto.getEnd());
+    public List<BudgetChange> getAllByUserIdAndCategoryIdBetweenDates(Authentication authentication, AllBudgetChangesByCategoryAndTimeDto dto) {
+        return budgetChangeRepo.findAllByUserIdAndCategoryIdAndDateTimeBetween(authService.getId(authentication), dto.getCategoryId(), dto.getStart(), dto.getEnd());
     }
 
     @Override
-    public List<BudgetChange> getAllByUserIdBetweenDates(Long userId, LocalDate start, LocalDate end) {
-        return budgetChangeRepo.findAllByUserIdAndDateTimeBetween(userId, start, end);
+    public List<BudgetChange> getAllByUserIdBetweenDates(Authentication authentication, LocalDate start, LocalDate end) {
+        return budgetChangeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(authentication), start, end);
     }
 }

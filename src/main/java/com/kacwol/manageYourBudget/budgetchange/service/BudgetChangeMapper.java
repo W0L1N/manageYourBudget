@@ -7,6 +7,8 @@ import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.service.CategoryMapper;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class BudgetChangeMapper {
 
@@ -17,12 +19,14 @@ public class BudgetChangeMapper {
     }
 
     public BudgetChange dtoToEntity(BudgetChangeDto dto, Category category) {
+        LocalDate actual = dto.getDateTime() == null ? LocalDate.now() : dto.getDateTime();
+
         return BudgetChange.builder()
                 .category(category)
                 .value(dto.getValue())
                 .description(dto.getDescription())
-                .dateTime(dto.getDateTime())
-                .dateTime(dto.getDateTime())
+                .dateTime(actual)
+                .user(category.getUser())
                 .build();
     }
 

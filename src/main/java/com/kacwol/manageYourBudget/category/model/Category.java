@@ -1,6 +1,6 @@
 package com.kacwol.manageYourBudget.category.model;
 
-import com.kacwol.manageYourBudget.User;
+import com.kacwol.manageYourBudget.user.model.User;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 
 @Entity
 @NoArgsConstructor
