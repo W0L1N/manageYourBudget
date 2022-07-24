@@ -2,6 +2,7 @@ package com.kacwol.manageYourBudget.category.service;
 
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.model.CategoryDto;
+import com.kacwol.manageYourBudget.category.model.CategoryResponseDto;
 import com.kacwol.manageYourBudget.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,10 @@ public class CategoryMapper {
 
     public Category dtoToEntity(Authentication authentication, String name) {
         return new Category(name, userService.getByUserName(authentication.getName()));
+    }
+
+    public CategoryResponseDto entityToResponse(Category entity) {
+        return new CategoryResponseDto(entity.getId(), entity.getName(), entity.getUser().getId());
     }
 
 }

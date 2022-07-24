@@ -5,6 +5,7 @@ import com.kacwol.manageYourBudget.budgetchange.model.request.BudgetChangeDto;
 import com.kacwol.manageYourBudget.budgetchange.model.response.BudgetChangeResponseDto;
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.service.CategoryMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ public class BudgetChangeMapper {
 
     private final CategoryMapper categoryMapper;
 
+    @Autowired
     public BudgetChangeMapper(CategoryMapper categoryMapper) {
         this.categoryMapper = categoryMapper;
     }

@@ -2,16 +2,19 @@ package com.kacwol.manageYourBudget.category.model;
 
 import com.kacwol.manageYourBudget.user.model.User;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-
+@AllArgsConstructor
 @Getter
 public class Category {
 
@@ -21,7 +24,7 @@ public class Category {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     public Category(String name, User user) {

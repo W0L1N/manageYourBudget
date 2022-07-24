@@ -1,7 +1,5 @@
 package com.kacwol.manageYourBudget.security;
 
-import com.kacwol.manageYourBudget.security.AppUserDetails;
-import com.kacwol.manageYourBudget.security.AppUserDetailsService;
 import com.kacwol.manageYourBudget.user.model.User;
 import com.kacwol.manageYourBudget.user.service.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;

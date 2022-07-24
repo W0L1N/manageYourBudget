@@ -24,4 +24,6 @@ public interface BudgetChangeService {
     List<BudgetChange> getAllByUserIdAndCategoryIdBetweenDates(Authentication authentication, AllBudgetChangesByCategoryAndTimeDto dto);
 
     List<BudgetChange> getAllByUserIdBetweenDates(Authentication authentication, LocalDate start, LocalDate end);
+
+    List<BudgetChange> getAllBudgetChanges(Authentication auth, LocalDate startDate, LocalDate endDate);
 }

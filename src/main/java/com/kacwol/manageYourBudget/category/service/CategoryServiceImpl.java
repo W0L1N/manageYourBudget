@@ -3,6 +3,7 @@ package com.kacwol.manageYourBudget.category.service;
 import com.kacwol.manageYourBudget.AuthService;
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.model.CategoryDto;
+import com.kacwol.manageYourBudget.category.model.CategoryResponseDto;
 import com.kacwol.manageYourBudget.exception.CategoryNotFoundException;
 
 import java.util.List;
@@ -50,5 +51,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> getAllCategories(Authentication authentication) {
         return categoryRepo.findAllByUserId(authService.getId(authentication));
+    }
+
+    @Override
+    public List<CategoryResponseDto> getAllCategoryResponses(Authentication authentication) {
+        return getAllCategories(authentication)
+                .stream()
+                .map(mapper::entityToResponse)
+                .toList();
     }
 }

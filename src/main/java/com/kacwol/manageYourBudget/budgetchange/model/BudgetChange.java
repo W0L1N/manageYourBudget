@@ -3,6 +3,7 @@ package com.kacwol.manageYourBudget.budgetchange.model;
 import com.kacwol.manageYourBudget.category.model.Category;
 import java.time.LocalDate;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +26,7 @@ public class BudgetChange {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @ManyToOne

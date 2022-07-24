@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class BudgetChangeServiceImpl implements BudgetChangeService {
 
     private final BudgetChangeRepo budgetChangeRepo;
+
     private final BudgetChangeMapper mapper;
 
     private final CategoryServiceImpl categoryService;
@@ -54,6 +55,11 @@ public class BudgetChangeServiceImpl implements BudgetChangeService {
     @Override
     public List<BudgetChange> getAllBudgetChanges(Authentication authentication) {
         return budgetChangeRepo.findAllByUserId(authService.getId(authentication));
+    }
+
+    @Override
+    public List<BudgetChange> getAllBudgetChanges(Authentication auth, LocalDate startDate, LocalDate endDate) {
+        return budgetChangeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(auth), startDate, endDate);
     }
 
     @Override
