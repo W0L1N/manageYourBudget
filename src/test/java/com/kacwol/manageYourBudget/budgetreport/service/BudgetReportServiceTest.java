@@ -24,6 +24,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -47,13 +48,13 @@ public class BudgetReportServiceTest {
         LocalDate start = LocalDate.of(2002, 7, 4);
         LocalDate end = LocalDate.of(2022, 7, 22);
 
-        LocalDate date = LocalDate.of(2013,5,5);
+        LocalDate date = LocalDate.of(2013, 5, 5);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = new User(1L, "user", "passwd", Set.of("ROLE_USER"));
 
         Category shopping = new Category(1L, "shopping", user);
-        Category  insurance = new Category(2L, "insurance", user);
+        Category insurance = new Category(2L, "insurance", user);
         Category job = new Category(3L, "job", user);
 
         BudgetChange food = new BudgetChange(1L, user, shopping, date, -150, "food");
@@ -66,23 +67,35 @@ public class BudgetReportServiceTest {
         BudgetChange salary = new BudgetChange(1L, user, job, date, 3500, "salary");
         BudgetChange anotherSalary = new BudgetChange(1L, user, job, date, 3500, "another salary");
 
-        BudgetReportElement forShopping = new BudgetReportElement(new CategoryDto(shopping.getName()), food.getValue() + clothes.getValue() + gift.getValue());
-        BudgetReportElement forInsurance = new BudgetReportElement(new CategoryDto(insurance.getName()), forCar.getValue() + forBrokenLeg.getValue());
-        BudgetReportElement forJob = new BudgetReportElement(new CategoryDto(job.getName()), salary.getValue() + anotherSalary.getValue());
+        BudgetReportElement forShopping = new BudgetReportElement(new CategoryDto(shopping.getName()), 0, food.getValue() + clothes.getValue() + gift.getValue());
+        BudgetReportElement forInsurance = new BudgetReportElement(new CategoryDto(insurance.getName()), forBrokenLeg.getValue(), forCar.getValue());
+        BudgetReportElement forJob = new BudgetReportElement(new CategoryDto(job.getName()), salary.getValue() + anotherSalary.getValue(), 0);
 
-        double expenses = food.getValue() + clothes.getValue() + gift.getValue();
-        double incomes = forBrokenLeg.getValue() + salary.getValue() + anotherSalary.getValue() + forCar.getValue();
+        double expenses = food.getValue() + clothes.getValue() + gift.getValue() + forCar.getValue();
+        double incomes = forBrokenLeg.getValue() + salary.getValue() + anotherSalary.getValue();
         double sum = expenses + incomes;
 
-        BudgetReportResponse expected = new BudgetReportResponse(start, end, expenses, incomes, sum, List.of(forShopping, forInsurance, forJob));
+        BudgetReportResponse expected = new BudgetReportResponse(start, end, expenses, incomes, sum, new ArrayList<>(List.of(forShopping, forInsurance, forJob)));
 
 
-        Mockito.when(categoryService.getAllCategories(auth)).thenReturn(List.of(shopping, insurance, job));
-        Mockito.when(budgetChangeService.getAllBudgetChanges(auth, start, end)).thenReturn(List.of(food, clothes, gift, forCar, forBrokenLeg, salary, anotherSalary));
+        Mockito.when(categoryService.getAllCategories(auth))
+                .thenReturn(List.of(shopping, insurance, job));
+
+        Mockito.when(budgetChangeService.getAllBudgetChanges(auth, start, end))
+                .thenReturn(List.of(food, clothes, gift, forCar, forBrokenLeg, salary, anotherSalary));
 
 
         BudgetReportResponse actual = budgetReportService.makeReportResponse(auth, new BudgetReportRequest(start, end));
         Assert.assertEquals(expected, actual);
+
+        Assert.assertEquals(expected.getStartDate(), actual.getStartDate());
+        Assert.assertEquals(expected.getEndDate(), actual.getEndDate());
+
+        Assert.assertEquals(expected.getSum(), actual.getSum(), 0);
+        Assert.assertEquals(expected.getExpenseSum(), actual.getExpenseSum(), 0);
+        Assert.assertEquals(expected.getElementList(), actual.getElementList());
+
+
     }
 
 }

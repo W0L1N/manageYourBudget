@@ -16,12 +16,11 @@ public class BudgetReportResponse {
 
     private LocalDate endDate;
 
-    double expense;
+    double expenseSum;
 
-    double incomes;
+    double incomeSum;
 
     double sum;
 
     private List<BudgetReportElement> elementList;
-
 }

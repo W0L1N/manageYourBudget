@@ -11,10 +11,12 @@ import com.kacwol.manageYourBudget.category.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 @Service
 public class BudgetReportService {
@@ -39,32 +41,35 @@ public class BudgetReportService {
                 reportRequest.getEndDate()
         );
 
-        List<BudgetReportElement>  elements = new ArrayList<>();
+        List<BudgetReportElement> elements = new ArrayList<>();
 
         for (Category category : categories) {
-            double value = budgetChanges.stream()
-                    .filter(budgetChange ->
-                            Objects.equals(budgetChange.getCategory().getId(), category.getId())
-                    )
-                    .mapToDouble(BudgetChange::getValue)
-                    .sum();
+            List<Double> values = budgetChanges
+                    .stream()
+                    .filter(budgetChange -> Objects.equals(budgetChange.getCategory().getId(), category.getId()))
+                    .map(BudgetChange::getValue)
+                    .toList();
 
-            elements.add(new BudgetReportElement(
-                    new CategoryDto(
-                            category.getName()),
-                            value
+            double incomeSum = getValuesSum(values, value -> value > 0);
+            double expenseSum = getValuesSum(values, value -> value < 0);
+
+            elements.add(
+                    new BudgetReportElement(
+                            new CategoryDto(
+                                    category.getName()
+                            ),
+                            incomeSum,
+                            expenseSum
                     )
             );
         }
 
         double expense = elements.stream()
-                .mapToDouble(BudgetReportElement::getValue)
-                .filter(value -> value < 0)
+                .mapToDouble(BudgetReportElement::getExpenseSum)
                 .sum();
 
         double income = elements.stream()
-                .mapToDouble(BudgetReportElement::getValue)
-                .filter(value -> value > 0)
+                .mapToDouble(BudgetReportElement::getIncomeSum)
                 .sum();
 
         double sum = income + expense;
@@ -83,7 +88,7 @@ public class BudgetReportService {
 
     public BudgetReportResponse makeReportResponseForMonth(Authentication auth, int year, int month) {
         LocalDate date = LocalDate.of(year, month, 1);
-        LocalDate lastDayOfMonthDate  = date.withDayOfMonth(
+        LocalDate lastDayOfMonthDate = date.withDayOfMonth(
                 date.getMonth().length(date.isLeapYear()));
 
         return makeReportResponse(
@@ -92,5 +97,13 @@ public class BudgetReportService {
                         LocalDate.of(year, month, 1),
                         LocalDate.of(year, month, lastDayOfMonthDate.getDayOfMonth())
                 ));
+    }
+
+    private double getValuesSum(List<Double> elements, Predicate<Double> testValue) {
+        return elements
+                .stream()
+                .filter(testValue)
+                .mapToDouble(e -> e)
+                .sum();
     }
 }
