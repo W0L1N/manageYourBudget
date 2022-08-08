@@ -1,5 +1,6 @@
 package com.kacwol.manageYourBudget.budgetchange.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kacwol.manageYourBudget.category.model.Category;
 import java.time.LocalDate;
 import javax.persistence.Entity;
@@ -27,6 +28,7 @@ public class BudgetChange {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private User user;
 
     @ManyToOne

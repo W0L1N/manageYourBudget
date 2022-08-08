@@ -19,12 +19,15 @@ public class CategoryMapper {
     }
 
     public CategoryDto entityToDto(Category entity) {
-        return new CategoryDto(entity.getName());
+        return new CategoryDto(entity.getId(), entity.getName());
     }
 
     public Category dtoToEntity(Authentication authentication, String name) {
         return new Category(name, userService.getByUserName(authentication.getName()));
     }
+//    public Category dtoToEntity(CategoryDto dto) {
+//        return new Category(dto.getName(), userService.getById(dto.getId())));
+//    }
 
     public CategoryResponseDto entityToResponse(Category entity) {
         return new CategoryResponseDto(entity.getId(), entity.getName(), entity.getUser().getId());

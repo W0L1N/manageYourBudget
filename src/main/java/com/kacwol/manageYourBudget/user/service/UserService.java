@@ -31,6 +31,9 @@ public class UserService {
             throw new UserNameAlreadyExistsException();
     }
 
+    public User getById(Long id) {
+        return userRepo.findById(id).orElseThrow();
+    }
 
     public User getByUserName(String name) {
         AppUserDetails details = (AppUserDetails) userDetailsService.loadUserByUsername(name);

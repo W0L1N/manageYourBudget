@@ -8,5 +8,6 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode
 public class CategoryDto {
+    private Long id;
     private String name;
 }

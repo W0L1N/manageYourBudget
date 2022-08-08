@@ -32,7 +32,7 @@ public class SecurityConfig {
     @Bean
     public AppUserDetailsService appUserDetailsService() {
         AppUserDetailsService userDetailsService = new AppUserDetailsService(userRepo, getBcryptPasswordEncoder());
-        userRepo.save(new User(1L, "admin", getBcryptPasswordEncoder().encode("admin"), Set.of("ROLE_ADMIN")));
+        userRepo.save(new User(1L, "admin", getBcryptPasswordEncoder().encode("admin"), Set.of("ROLE_USER", "ROLE_ADMIN")));
         return  userDetailsService;
     }
 

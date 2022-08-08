@@ -56,6 +56,7 @@ public class BudgetReportService {
             elements.add(
                     new BudgetReportElement(
                             new CategoryDto(
+                                    category.getId(),
                                     category.getName()
                             ),
                             incomeSum,
