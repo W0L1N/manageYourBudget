@@ -8,10 +8,12 @@ import com.kacwol.manageYourBudget.budgetchange.model.request.BudgetChangeDto;
 import com.kacwol.manageYourBudget.budgetchange.model.response.BudgetChangeResponseDto;
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.service.CategoryServiceImpl;
+import com.kacwol.manageYourBudget.exception.BadDatesException;
 import com.kacwol.manageYourBudget.exception.BudgetChangeNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -59,7 +61,12 @@ public class BudgetChangeServiceImpl implements BudgetChangeService {
 
     @Override
     public List<BudgetChange> getAllBudgetChanges(Authentication auth, LocalDate startDate, LocalDate endDate) {
-        return budgetChangeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(auth), startDate, endDate);
+        if (startDate.isAfter(endDate)) {
+            throw new BadDatesException("Start date cannot be later than end date.");
+        } else {
+            return budgetChangeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(auth), startDate, endDate);
+        }
+
     }
 
     @Override
@@ -69,11 +76,10 @@ public class BudgetChangeServiceImpl implements BudgetChangeService {
 
     @Override
     public List<BudgetChange> getAllByUserIdAndCategoryIdBetweenDates(Authentication authentication, AllBudgetChangesByCategoryAndTimeDto dto) {
-        return budgetChangeRepo.findAllByUserIdAndCategoryIdAndDateTimeBetween(authService.getId(authentication), dto.getCategoryId(), dto.getStart(), dto.getEnd());
-    }
-
-    @Override
-    public List<BudgetChange> getAllByUserIdBetweenDates(Authentication authentication, LocalDate start, LocalDate end) {
-        return budgetChangeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(authentication), start, end);
+        if (dto.getStart().isAfter(dto.getEnd())) {
+            throw new BadDatesException("Start date cannot be later than end date.");
+        } else {
+            return budgetChangeRepo.findAllByUserIdAndCategoryIdAndDateTimeBetween(authService.getId(authentication), dto.getCategoryId(), dto.getStart(), dto.getEnd());
+        }
     }
 }

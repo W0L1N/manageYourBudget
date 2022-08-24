@@ -9,6 +9,7 @@ import com.kacwol.manageYourBudget.budgetplan.model.response.BudgetPlanResponseD
 import com.kacwol.manageYourBudget.budgetreport.model.response.BudgetReportElement;
 import com.kacwol.manageYourBudget.budgetreport.model.response.BudgetReportResponse;
 import com.kacwol.manageYourBudget.budgetreport.service.BudgetReportService;
+import com.kacwol.manageYourBudget.exception.BudgetPlanNotFoundException;
 import com.kacwol.manageYourBudget.user.model.User;
 import com.kacwol.manageYourBudget.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class BudgetPlanService {
     }
 
     public BudgetPlan getById(Authentication auth, Long id) {
-        return planRepo.findByIdAndUserId(id, authService.getId(auth)).orElseThrow();
+        return planRepo.findByIdAndUserId(id, authService.getId(auth)).orElseThrow(BudgetPlanNotFoundException::new);
     }
 
     public BudgetPlanResponseDto getBudgetPlanReport(Authentication auth, Long id) {

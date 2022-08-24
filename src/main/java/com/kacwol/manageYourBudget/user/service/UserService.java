@@ -27,8 +27,9 @@ public class UserService {
     public void register(UserDto userDto) {
         if (!userRepo.existsByUsername(userDto.getUsername())) {
             userRepo.save(userMapper.dtoToEntity(userDto, "ROLE_USER"));
-        } else
-            throw new UserNameAlreadyExistsException();
+        } else {
+            throw new UserNameAlreadyExistsException("User already exits.");
+        }
     }
 
     public User getById(Long id) {

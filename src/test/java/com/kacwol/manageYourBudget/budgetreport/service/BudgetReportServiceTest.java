@@ -67,9 +67,9 @@ public class BudgetReportServiceTest {
         BudgetChange salary = new BudgetChange(1L, user, job, date, 3500, "salary");
         BudgetChange anotherSalary = new BudgetChange(1L, user, job, date, 3500, "another salary");
 
-        BudgetReportElement forShopping = new BudgetReportElement(new CategoryDto(shopping.getName()), 0, food.getValue() + clothes.getValue() + gift.getValue());
-        BudgetReportElement forInsurance = new BudgetReportElement(new CategoryDto(insurance.getName()), forBrokenLeg.getValue(), forCar.getValue());
-        BudgetReportElement forJob = new BudgetReportElement(new CategoryDto(job.getName()), salary.getValue() + anotherSalary.getValue(), 0);
+        BudgetReportElement forShopping = new BudgetReportElement(new CategoryDto(1L, shopping.getName()), 0, food.getValue() + clothes.getValue() + gift.getValue());
+        BudgetReportElement forInsurance = new BudgetReportElement(new CategoryDto(2L, insurance.getName()), forBrokenLeg.getValue(), forCar.getValue());
+        BudgetReportElement forJob = new BudgetReportElement(new CategoryDto(3L, job.getName()), salary.getValue() + anotherSalary.getValue(), 0);
 
         double expenses = food.getValue() + clothes.getValue() + gift.getValue() + forCar.getValue();
         double incomes = forBrokenLeg.getValue() + salary.getValue() + anotherSalary.getValue();
