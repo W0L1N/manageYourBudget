@@ -36,6 +36,11 @@ public class BasicExceptionHandler {
         return basicHandleException(e, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadValueException.class)
+    public ResponseEntity<BadValueException> handleBadValueException(BadValueException e) {
+        return basicHandleException(e, HttpStatus.BAD_REQUEST);
+    }
+
     private ResponseEntity basicHandleException(Exception e, HttpStatus httpStatus) {
 
         String[] longName = e.getClass().getTypeName().split("\\.");

@@ -4,11 +4,13 @@ import com.kacwol.manageYourBudget.AuthService;
 import com.kacwol.manageYourBudget.budgetplan.model.BudgetPlan;
 import com.kacwol.manageYourBudget.budgetplan.model.BudgetPlanElement;
 import com.kacwol.manageYourBudget.budgetplan.model.request.BudgetPlanRequest;
+import com.kacwol.manageYourBudget.budgetplan.model.request.BudgetPlanRequestElement;
 import com.kacwol.manageYourBudget.budgetplan.model.response.BudgetPlanElementResponseDto;
 import com.kacwol.manageYourBudget.budgetplan.model.response.BudgetPlanResponseDto;
 import com.kacwol.manageYourBudget.budgetreport.model.response.BudgetReportElement;
 import com.kacwol.manageYourBudget.budgetreport.model.response.BudgetReportResponse;
 import com.kacwol.manageYourBudget.budgetreport.service.BudgetReportService;
+import com.kacwol.manageYourBudget.exception.BadValueException;
 import com.kacwol.manageYourBudget.exception.BudgetPlanNotFoundException;
 import com.kacwol.manageYourBudget.user.model.User;
 import com.kacwol.manageYourBudget.user.service.UserService;
@@ -71,6 +73,13 @@ public class BudgetPlanService {
     }
 
     public void addBudgetPlan(Authentication auth, BudgetPlanRequest request) {
+
+        for (BudgetPlanRequestElement element : request.getElements()) {
+            if(element.getValue() > 0) {
+                throw new BadValueException("Value cannot be higher than 0 ");
+            }
+        }
+
         List<BudgetPlanElement> elements = request.getElements()
                 .stream()
                 .map(w -> mapper.elementToEntity(auth, w))
@@ -81,7 +90,7 @@ public class BudgetPlanService {
     }
 
 
-    private BudgetReportElement getBudgetReportElement(List<BudgetReportElement> reportElements, BudgetPlanElement element) {
+    private BudgetReportElement getBudgetReportElement (List<BudgetReportElement> reportElements, BudgetPlanElement element) {
         return reportElements
                 .stream()
                 .filter(

@@ -23,11 +23,6 @@ import java.util.stream.Collectors;
 @Component
 public class BudgetPlanMapper {
 
-
-    //private final CategoryMapper categoryMapper;
-
-
-
     private UserService userService;
 
     private CategoryServiceImpl categoryService;
@@ -43,19 +38,14 @@ public class BudgetPlanMapper {
         double plannedValue = planElement.getValue();
         double actualValue = reportElement.getExpenseSum();
 
+
         return new BudgetPlanElementResponseDto(
                 reportElement.getCategory(),
                 planElement.getValue(),
                 reportElement.getExpenseSum(),
-                plannedValue > actualValue
+                Math.abs(actualValue) > Math.abs(plannedValue)
         );
     }
-
-//    public BudgetPlan requestToEntity(Authentication auth, BudgetPlanRequest request) {
-//
-//
-//        //return new BudgetPlan(null, user, elements, request.getYear(), request.getMonth());
-//    }
 
     public BudgetPlanElement elementToEntity(Authentication auth, BudgetPlanRequestElement element) {
         Category category = categoryService.getCategoryById(auth, element.getCategory().getId());
