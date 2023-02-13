@@ -4,19 +4,16 @@ import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.model.CategoryDto;
 import com.kacwol.manageYourBudget.category.model.CategoryResponseDto;
 import com.kacwol.manageYourBudget.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryMapper {
 
     private final UserService userService;
-
-    @Autowired
-    public CategoryMapper(UserService userService) {
-        this.userService = userService;
-    }
 
     public CategoryDto entityToDto(Category entity) {
         return new CategoryDto(entity.getId(), entity.getName());

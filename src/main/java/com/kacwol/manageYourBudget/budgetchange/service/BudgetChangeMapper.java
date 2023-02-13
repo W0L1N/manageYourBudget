@@ -1,35 +1,34 @@
 package com.kacwol.manageYourBudget.budgetchange.service;
 
 import com.kacwol.manageYourBudget.budgetchange.model.BudgetChange;
+import com.kacwol.manageYourBudget.budgetchange.model.Expense;
+import com.kacwol.manageYourBudget.budgetchange.model.Income;
 import com.kacwol.manageYourBudget.budgetchange.model.request.BudgetChangeDto;
 import com.kacwol.manageYourBudget.budgetchange.model.response.BudgetChangeResponseDto;
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.service.CategoryMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Component
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class BudgetChangeMapper {
 
     private final CategoryMapper categoryMapper;
 
-    @Autowired
-    public BudgetChangeMapper(CategoryMapper categoryMapper) {
-        this.categoryMapper = categoryMapper;
-    }
-
     public BudgetChange dtoToEntity(BudgetChangeDto dto, Category category) {
         LocalDate actual = dto.getDateTime() == null ? LocalDate.now() : dto.getDateTime();
-
-        return BudgetChange.builder()
+        BudgetChange budgetChange = BudgetChange.builder()
                 .category(category)
                 .value(dto.getValue())
                 .description(dto.getDescription())
                 .dateTime(actual)
                 .user(category.getUser())
                 .build();
+        return (dto.getValue().doubleValue() > 0)? (Income) budgetChange : (Expense) budgetChange;
     }
 
     public BudgetChangeResponseDto entityToResponseDto(BudgetChange entity) {

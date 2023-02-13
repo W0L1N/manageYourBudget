@@ -1,18 +1,21 @@
 package com.kacwol.manageYourBudget.budgetchange.model.request;
 
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+
 @Getter
+@AllArgsConstructor
 public class BudgetChangeDto {
 
     private Long categoryId;
 
     private LocalDate dateTime;
 
-    private double value;
+    private BigDecimal value;
 
     private String description;
 }

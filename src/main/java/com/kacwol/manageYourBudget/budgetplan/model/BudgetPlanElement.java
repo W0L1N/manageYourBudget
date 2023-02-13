@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import java.math.BigDecimal;
 
 @Entity
 @NoArgsConstructor
@@ -24,6 +25,6 @@ public class BudgetPlanElement {
     @ManyToOne
     private Category category;
 
-    private double value;
+    private BigDecimal value;
 
 }

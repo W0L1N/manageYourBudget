@@ -5,17 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.Objects;
+import java.math.BigDecimal;
 
-@AllArgsConstructor
+
 @Getter
 @EqualsAndHashCode
+@AllArgsConstructor
 public class BudgetReportElement {
 
     private CategoryDto category;
 
-    private double incomeSum;
+    private BigDecimal incomeSum;
 
-    private double expenseSum;
+    private BigDecimal expenseSum;
 
 }

@@ -3,8 +3,9 @@ package com.kacwol.manageYourBudget.category.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
+
 @Getter
+@AllArgsConstructor
 public class CategoryResponseDto {
 
     private Long id;

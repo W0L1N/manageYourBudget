@@ -4,23 +4,25 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-@AllArgsConstructor
+
 @Getter
 @EqualsAndHashCode
+@AllArgsConstructor
 public class BudgetReportResponse {
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
-    double expenseSum;
+    BigDecimal expenseSum;
 
-    double incomeSum;
+    BigDecimal incomeSum;
 
-    double sum;
+    BigDecimal sum;
 
     private List<BudgetReportElement> elementList;
 }

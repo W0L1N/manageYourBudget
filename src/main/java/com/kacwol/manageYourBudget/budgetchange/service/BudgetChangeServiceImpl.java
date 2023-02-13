@@ -2,7 +2,11 @@ package com.kacwol.manageYourBudget.budgetchange.service;
 
 import com.kacwol.manageYourBudget.AuthService;
 import com.kacwol.manageYourBudget.budgetchange.BudgetChangeRepo;
+import com.kacwol.manageYourBudget.budgetchange.ExpenseRepo;
+import com.kacwol.manageYourBudget.budgetchange.IncomeRepo;
 import com.kacwol.manageYourBudget.budgetchange.model.BudgetChange;
+import com.kacwol.manageYourBudget.budgetchange.model.Expense;
+import com.kacwol.manageYourBudget.budgetchange.model.Income;
 import com.kacwol.manageYourBudget.budgetchange.model.request.AllBudgetChangesByCategoryAndTimeDto;
 import com.kacwol.manageYourBudget.budgetchange.model.request.BudgetChangeDto;
 import com.kacwol.manageYourBudget.budgetchange.model.response.BudgetChangeResponseDto;
@@ -10,18 +14,24 @@ import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.service.CategoryServiceImpl;
 import com.kacwol.manageYourBudget.exception.BadDatesException;
 import com.kacwol.manageYourBudget.exception.BudgetChangeNotFoundException;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
+
 @Service
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class BudgetChangeServiceImpl implements BudgetChangeService {
 
     private final BudgetChangeRepo budgetChangeRepo;
+
+    private final ExpenseRepo expenseRepo;
+
+    private final IncomeRepo incomeRepo;
 
     private final BudgetChangeMapper mapper;
 
@@ -29,13 +39,6 @@ public class BudgetChangeServiceImpl implements BudgetChangeService {
 
     private final AuthService authService;
 
-    @Autowired
-    public BudgetChangeServiceImpl(BudgetChangeRepo budgetChangeRepo, BudgetChangeMapper mapper, CategoryServiceImpl categoryService, AuthService authService) {
-        this.budgetChangeRepo = budgetChangeRepo;
-        this.mapper = mapper;
-        this.categoryService = categoryService;
-        this.authService = authService;
-    }
 
     @Override
     public void addBudgetChange(Authentication authentication, BudgetChangeDto budgetChange) {
@@ -66,7 +69,24 @@ public class BudgetChangeServiceImpl implements BudgetChangeService {
         } else {
             return budgetChangeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(auth), startDate, endDate);
         }
+    }
 
+    @Override
+    public LinkedList<Expense> getAllExpenses(Authentication auth, LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new BadDatesException("Start date cannot be later than end date.");
+        } else {
+            return expenseRepo.findAllByUserIdAndDateTimeBetween(authService.getId(auth), startDate, endDate);
+        }
+    }
+
+    @Override
+    public LinkedList<Income> getAllIncomes(Authentication auth, LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new BadDatesException("Start date cannot be later than end date.");
+        } else {
+            return incomeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(auth), startDate, endDate);
+        }
     }
 
     @Override

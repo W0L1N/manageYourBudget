@@ -5,27 +5,21 @@ import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.model.CategoryDto;
 import com.kacwol.manageYourBudget.category.model.CategoryResponseDto;
 import com.kacwol.manageYourBudget.exception.CategoryNotFoundException;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepo categoryRepo;
     private final CategoryMapper mapper;
 
     private final AuthService authService;
-
-    @Autowired
-    public CategoryServiceImpl(CategoryRepo categoryRepo, CategoryMapper mapper, AuthService authService) {
-        this.categoryRepo = categoryRepo;
-        this.mapper = mapper;
-        this.authService = authService;
-    }
 
     @Override
     public void addCategory(Authentication authentication, String name) {

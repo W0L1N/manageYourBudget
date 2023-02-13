@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-@AllArgsConstructor
+
 @Getter
 @EqualsAndHashCode
+@AllArgsConstructor
 public class CategoryDto {
     private Long id;
     private String name;

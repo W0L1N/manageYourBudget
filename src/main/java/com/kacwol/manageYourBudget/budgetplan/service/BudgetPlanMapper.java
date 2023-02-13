@@ -1,24 +1,17 @@
 package com.kacwol.manageYourBudget.budgetplan.service;
 
-import com.kacwol.manageYourBudget.budgetplan.model.BudgetPlan;
 import com.kacwol.manageYourBudget.budgetplan.model.BudgetPlanElement;
-import com.kacwol.manageYourBudget.budgetplan.model.request.BudgetPlanRequest;
 import com.kacwol.manageYourBudget.budgetplan.model.request.BudgetPlanRequestElement;
 import com.kacwol.manageYourBudget.budgetplan.model.response.BudgetPlanElementResponseDto;
 import com.kacwol.manageYourBudget.budgetreport.model.response.BudgetReportElement;
 import com.kacwol.manageYourBudget.category.model.Category;
-import com.kacwol.manageYourBudget.category.service.CategoryMapper;
-import com.kacwol.manageYourBudget.category.service.CategoryService;
 import com.kacwol.manageYourBudget.category.service.CategoryServiceImpl;
-import com.kacwol.manageYourBudget.user.model.User;
 import com.kacwol.manageYourBudget.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 @Component
 public class BudgetPlanMapper {
@@ -35,15 +28,14 @@ public class BudgetPlanMapper {
 
     public BudgetPlanElementResponseDto planElementToDto(BudgetReportElement reportElement, BudgetPlanElement planElement) {
 
-        double plannedValue = planElement.getValue();
-        double actualValue = reportElement.getExpenseSum();
-
+        BigDecimal plannedValue = planElement.getValue();
+        BigDecimal actualValue = reportElement.getExpenseSum();
 
         return new BudgetPlanElementResponseDto(
                 reportElement.getCategory(),
                 planElement.getValue(),
                 reportElement.getExpenseSum(),
-                Math.abs(actualValue) > Math.abs(plannedValue)
+                plannedValue.doubleValue() > actualValue.doubleValue()
         );
     }
 

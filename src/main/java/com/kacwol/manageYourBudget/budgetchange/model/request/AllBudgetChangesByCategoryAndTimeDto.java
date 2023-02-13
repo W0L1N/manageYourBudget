@@ -1,11 +1,13 @@
 package com.kacwol.manageYourBudget.budgetchange.model.request;
 
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
+import java.time.LocalDate;
+
+
 @Getter
+@AllArgsConstructor
 public class AllBudgetChangesByCategoryAndTimeDto {
 
     private Long categoryId;

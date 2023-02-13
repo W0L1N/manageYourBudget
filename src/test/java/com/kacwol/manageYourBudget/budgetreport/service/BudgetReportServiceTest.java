@@ -1,6 +1,7 @@
 package com.kacwol.manageYourBudget.budgetreport.service;
 
-import com.kacwol.manageYourBudget.budgetchange.model.BudgetChange;
+import com.kacwol.manageYourBudget.budgetchange.model.Expense;
+import com.kacwol.manageYourBudget.budgetchange.model.Income;
 import com.kacwol.manageYourBudget.budgetchange.service.BudgetChangeServiceImpl;
 import com.kacwol.manageYourBudget.budgetreport.model.request.BudgetReportRequest;
 import com.kacwol.manageYourBudget.budgetreport.model.response.BudgetReportElement;
@@ -15,22 +16,22 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+@WithMockUser
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner.class)
-@WithMockUser
 public class BudgetReportServiceTest {
 
     @Mock
@@ -44,7 +45,7 @@ public class BudgetReportServiceTest {
 
     @Test
     public void test() {
-
+    //given
         LocalDate start = LocalDate.of(2002, 7, 4);
         LocalDate end = LocalDate.of(2022, 7, 22);
 
@@ -57,45 +58,41 @@ public class BudgetReportServiceTest {
         Category insurance = new Category(2L, "insurance", user);
         Category job = new Category(3L, "job", user);
 
-        BudgetChange food = new BudgetChange(1L, user, shopping, date, -150, "food");
-        BudgetChange clothes = new BudgetChange(1L, user, shopping, date, -500, "clothes");
-        BudgetChange gift = new BudgetChange(1L, user, shopping, date, -230, "gift for child");
+        Expense food = new Expense(1L, user, shopping, date, BigDecimal.valueOf(150), "food");
+        Expense clothes = new Expense(2L, user, shopping, date, BigDecimal.valueOf(500), "clothes");
+        Expense gift = new Expense(3L, user, shopping, date, BigDecimal.valueOf(230), "gift for child");
 
-        BudgetChange forCar = new BudgetChange(1L, user, insurance, date, -170, "OC/AC");
-        BudgetChange forBrokenLeg = new BudgetChange(1L, user, insurance, date, 300, "for broken leg");
+        Expense forCar = new Expense(4L, user, insurance, date, BigDecimal.valueOf(170), "OC/AC");
+        Income forBrokenLeg = new Income(5L, user, insurance, date, BigDecimal.valueOf(300), "for broken leg");
 
-        BudgetChange salary = new BudgetChange(1L, user, job, date, 3500, "salary");
-        BudgetChange anotherSalary = new BudgetChange(1L, user, job, date, 3500, "another salary");
+        Income salary = new Income(6L, user, job, date, BigDecimal.valueOf(3500), "salary");
+        Income anotherSalary = new Income(7L, user, job, date, BigDecimal.valueOf(3500), "another salary");
 
-        BudgetReportElement forShopping = new BudgetReportElement(new CategoryDto(1L, shopping.getName()), 0, food.getValue() + clothes.getValue() + gift.getValue());
+        BudgetReportElement forShopping = new BudgetReportElement(new CategoryDto(1L, shopping.getName()), BigDecimal.ZERO, food.getValue().add(clothes.getValue()).add(gift.getValue()));
         BudgetReportElement forInsurance = new BudgetReportElement(new CategoryDto(2L, insurance.getName()), forBrokenLeg.getValue(), forCar.getValue());
-        BudgetReportElement forJob = new BudgetReportElement(new CategoryDto(3L, job.getName()), salary.getValue() + anotherSalary.getValue(), 0);
+        BudgetReportElement forJob = new BudgetReportElement(new CategoryDto(3L, job.getName()), salary.getValue().add(anotherSalary.getValue()), BigDecimal.ZERO);
 
-        double expenses = food.getValue() + clothes.getValue() + gift.getValue() + forCar.getValue();
-        double incomes = forBrokenLeg.getValue() + salary.getValue() + anotherSalary.getValue();
-        double sum = expenses + incomes;
+        BigDecimal expenses = food.getValue().add(clothes.getValue()).add(gift.getValue()).add(forCar.getValue());
+        BigDecimal incomes = forBrokenLeg.getValue().add(salary.getValue()).add(anotherSalary.getValue());
+        BigDecimal sum = incomes.subtract(expenses);
 
         BudgetReportResponse expected = new BudgetReportResponse(start, end, expenses, incomes, sum, new ArrayList<>(List.of(forShopping, forInsurance, forJob)));
 
-
+        //when
         Mockito.when(categoryService.getAllCategories(auth))
                 .thenReturn(List.of(shopping, insurance, job));
 
-        Mockito.when(budgetChangeService.getAllBudgetChanges(auth, start, end))
-                .thenReturn(List.of(food, clothes, gift, forCar, forBrokenLeg, salary, anotherSalary));
+        Mockito.when(budgetChangeService.getAllExpenses(auth, start, end))
+                        .thenReturn(new LinkedList<>(List.of(food, clothes, gift, forCar)));
 
+        Mockito.when(budgetChangeService.getAllIncomes(auth, start, end))
+                .thenReturn( new LinkedList<>(List.of(forBrokenLeg, salary, anotherSalary)));
+
+        //then
 
         BudgetReportResponse actual = budgetReportService.makeReportResponse(auth, new BudgetReportRequest(start, end));
+
         Assert.assertEquals(expected, actual);
-
-        Assert.assertEquals(expected.getStartDate(), actual.getStartDate());
-        Assert.assertEquals(expected.getEndDate(), actual.getEndDate());
-
-        Assert.assertEquals(expected.getSum(), actual.getSum(), 0);
-        Assert.assertEquals(expected.getExpenseSum(), actual.getExpenseSum(), 0);
-        Assert.assertEquals(expected.getElementList(), actual.getElementList());
-
-
     }
 
 }

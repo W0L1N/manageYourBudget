@@ -1,41 +1,49 @@
 package com.kacwol.manageYourBudget.budgetreport.service;
 
 import com.kacwol.manageYourBudget.budgetchange.model.BudgetChange;
-import com.kacwol.manageYourBudget.budgetchange.service.BudgetChangeServiceImpl;
+import com.kacwol.manageYourBudget.budgetchange.model.Expense;
+import com.kacwol.manageYourBudget.budgetchange.model.Income;
+import com.kacwol.manageYourBudget.budgetchange.service.BudgetChangeService;
 import com.kacwol.manageYourBudget.budgetreport.model.request.BudgetReportRequest;
 import com.kacwol.manageYourBudget.budgetreport.model.response.BudgetReportElement;
 import com.kacwol.manageYourBudget.budgetreport.model.response.BudgetReportResponse;
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.model.CategoryDto;
 import com.kacwol.manageYourBudget.category.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class BudgetReportService {
 
     private final CategoryService categoryService;
 
-    private final BudgetChangeServiceImpl budgetChangeService;
+    private final BudgetChangeService budgetChangeService;
 
-    @Autowired
-    public BudgetReportService(CategoryService categoryService, BudgetChangeServiceImpl budgetChangeService) {
-        this.categoryService = categoryService;
-        this.budgetChangeService = budgetChangeService;
-    }
-
+    @SuppressWarnings("checkstyle:WhitespaceAfter")
     public BudgetReportResponse makeReportResponse(Authentication auth, BudgetReportRequest reportRequest) {
 
         List<Category> categories = categoryService.getAllCategories(auth);
 
-        List<BudgetChange> budgetChanges = budgetChangeService.getAllBudgetChanges(
+        List<Expense> expenses = budgetChangeService.getAllExpenses(
+                auth,
+                reportRequest.getStartDate(),
+                reportRequest.getEndDate()
+        );
+
+        LinkedList<Income> incomes = budgetChangeService.getAllIncomes(
                 auth,
                 reportRequest.getStartDate(),
                 reportRequest.getEndDate()
@@ -44,14 +52,12 @@ public class BudgetReportService {
         List<BudgetReportElement> elements = new ArrayList<>();
 
         for (Category category : categories) {
-            List<Double> values = budgetChanges
-                    .stream()
-                    .filter(budgetChange -> Objects.equals(budgetChange.getCategory().getId(), category.getId()))
-                    .map(BudgetChange::getValue)
-                    .toList();
-
-            double incomeSum = getValuesSum(values, value -> value > 0);
-            double expenseSum = getValuesSum(values, value -> value < 0);
+            log.info("income " + category);
+            BigDecimal incomeSum = getValuesSum((LinkedList) incomes, category);
+            log.info(" "+incomeSum.doubleValue());
+            log.info("expense " + category);
+            BigDecimal expenseSum = getValuesSum((LinkedList) expenses, category);
+            log.info(" "+expenseSum.doubleValue());
 
             elements.add(
                     new BudgetReportElement(
@@ -65,15 +71,17 @@ public class BudgetReportService {
             );
         }
 
-        double expense = elements.stream()
-                .mapToDouble(BudgetReportElement::getExpenseSum)
-                .sum();
+        BigDecimal expense = elements.stream()
+                .map(BudgetReportElement::getExpenseSum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        log.info("Super expense: " + expense);
 
-        double income = elements.stream()
-                .mapToDouble(BudgetReportElement::getIncomeSum)
-                .sum();
+        BigDecimal income = elements.stream()
+                .map(BudgetReportElement::getIncomeSum)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        log.info("Super income: " + income);
 
-        double sum = income + expense;
+        BigDecimal sum = income.subtract(expense);
 
         return new BudgetReportResponse(reportRequest.getStartDate(), reportRequest.getEndDate(), expense, income, sum, elements);
     }
@@ -100,11 +108,20 @@ public class BudgetReportService {
                 ));
     }
 
-    private double getValuesSum(List<Double> elements, Predicate<Double> testValue) {
-        return elements
-                .stream()
-                .filter(testValue)
-                .mapToDouble(e -> e)
-                .sum();
+    private BigDecimal getValuesSum(LinkedList<BudgetChange> elements, Category category) {
+        BigDecimal sum = BigDecimal.valueOf(0);
+
+        Iterator<BudgetChange> iterator = elements.listIterator();
+
+        while(iterator.hasNext()){
+            BudgetChange change = iterator.next();
+            if(change.getCategory().equals(category)){
+                //log.info(""+change.getValue().doubleValue() + "    " + category.getName());
+                sum = sum.add(change.getValue());
+                //log.info("sum: " + sum.doubleValue());
+                iterator.remove();
+            }
+        }
+        return sum;
     }
 }
