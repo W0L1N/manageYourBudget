@@ -1,28 +1,24 @@
 package com.kacwol.manageYourBudget.user.service;
 
 import com.kacwol.manageYourBudget.exception.UserNameAlreadyExistsException;
-import com.kacwol.manageYourBudget.security.AppUserDetails;
-import com.kacwol.manageYourBudget.security.AppUserDetailsService;
 import com.kacwol.manageYourBudget.user.model.User;
 import com.kacwol.manageYourBudget.user.model.UserDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kacwol.manageYourBudget.user.service.security.AppUserDetails;
+import com.kacwol.manageYourBudget.user.service.security.AppUserDetailsService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public class AuthService {
 
     private final AppUserDetailsService userDetailsService;
 
     private final UserRepo userRepo;
 
     private final UserMapper userMapper;
-
-    @Autowired
-    public UserService(AppUserDetailsService userDetailsService, UserRepo userRepo, UserMapper userMapper) {
-        this.userDetailsService = userDetailsService;
-        this.userRepo = userRepo;
-        this.userMapper = userMapper;
-    }
 
     public void register(UserDto userDto) {
         if (!userRepo.existsByUsername(userDto.getUsername())) {
@@ -32,12 +28,13 @@ public class UserService {
         }
     }
 
-    public User getById(Long id) {
-        return userRepo.findById(id).orElseThrow();
-    }
-
-    public User getByUserName(String name) {
+    public User getAuthenticatedUser() {
+        final String name = SecurityContextHolder.getContext().getAuthentication().getName();
         AppUserDetails details = (AppUserDetails) userDetailsService.loadUserByUsername(name);
         return details.getUser();
+    }
+
+    public Long getId() {
+        return getAuthenticatedUser().getId();
     }
 }

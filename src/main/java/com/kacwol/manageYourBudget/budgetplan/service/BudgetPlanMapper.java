@@ -6,25 +6,21 @@ import com.kacwol.manageYourBudget.budgetplan.model.response.BudgetPlanElementRe
 import com.kacwol.manageYourBudget.budgetreport.model.response.BudgetReportElement;
 import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.service.CategoryServiceImpl;
-import com.kacwol.manageYourBudget.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import com.kacwol.manageYourBudget.user.service.AuthService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
 @Component
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class BudgetPlanMapper {
 
-    private UserService userService;
+    private final AuthService userService;
 
-    private CategoryServiceImpl categoryService;
+    private final CategoryServiceImpl categoryService;
 
-    @Autowired
-    public BudgetPlanMapper(UserService userService, CategoryServiceImpl categoryService) {
-        this.userService = userService;
-        this.categoryService = categoryService;
-    }
 
     public BudgetPlanElementResponseDto planElementToDto(BudgetReportElement reportElement, BudgetPlanElement planElement) {
 
@@ -39,8 +35,8 @@ public class BudgetPlanMapper {
         );
     }
 
-    public BudgetPlanElement elementToEntity(Authentication auth, BudgetPlanRequestElement element) {
-        Category category = categoryService.getCategoryById(auth, element.getCategory().getId());
+    public BudgetPlanElement elementToEntity(BudgetPlanRequestElement element) {
+        Category category = categoryService.getCategoryById(element.getCategory().getId());
         return new BudgetPlanElement(null, category, element.getValue());
     }
 

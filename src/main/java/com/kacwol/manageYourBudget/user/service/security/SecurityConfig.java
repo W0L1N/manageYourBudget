@@ -1,4 +1,4 @@
-package com.kacwol.manageYourBudget.security;
+package com.kacwol.manageYourBudget.user.service.security;
 
 import com.kacwol.manageYourBudget.user.model.User;
 import com.kacwol.manageYourBudget.user.service.UserRepo;

@@ -1,4 +1,4 @@
-package com.kacwol.manageYourBudget.security;
+package com.kacwol.manageYourBudget.user.service.security;
 
 import com.kacwol.manageYourBudget.user.model.User;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+
 @Getter
 @EqualsAndHashCode
+@AllArgsConstructor
 public class AppUserDetails implements UserDetails {
 
     private User user;

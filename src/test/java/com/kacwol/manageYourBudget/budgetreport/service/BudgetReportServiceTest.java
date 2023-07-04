@@ -16,11 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,9 +25,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-@WithMockUser
-@SpringBootTest
-@RunWith(SpringJUnit4ClassRunner.class)
+//@WithMockUser
+//@SpringBootTest
+//@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class BudgetReportServiceTest {
 
     @Mock
@@ -51,7 +48,7 @@ public class BudgetReportServiceTest {
 
         LocalDate date = LocalDate.of(2013, 5, 5);
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = new User(1L, "user", "passwd", Set.of("ROLE_USER"));
 
         Category shopping = new Category(1L, "shopping", user);
@@ -79,18 +76,18 @@ public class BudgetReportServiceTest {
         BudgetReportResponse expected = new BudgetReportResponse(start, end, expenses, incomes, sum, new ArrayList<>(List.of(forShopping, forInsurance, forJob)));
 
         //when
-        Mockito.when(categoryService.getAllCategories(auth))
+        Mockito.when(categoryService.getAllCategories())
                 .thenReturn(List.of(shopping, insurance, job));
 
-        Mockito.when(budgetChangeService.getAllExpenses(auth, start, end))
+        Mockito.when(budgetChangeService.getAllExpenses(start, end))
                         .thenReturn(new LinkedList<>(List.of(food, clothes, gift, forCar)));
 
-        Mockito.when(budgetChangeService.getAllIncomes(auth, start, end))
+        Mockito.when(budgetChangeService.getAllIncomes(start, end))
                 .thenReturn( new LinkedList<>(List.of(forBrokenLeg, salary, anotherSalary)));
 
         //then
 
-        BudgetReportResponse actual = budgetReportService.makeReportResponse(auth, new BudgetReportRequest(start, end));
+        BudgetReportResponse actual = budgetReportService.makeReportResponse(new BudgetReportRequest(start, end));
 
         Assert.assertEquals(expected, actual);
     }

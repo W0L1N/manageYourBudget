@@ -2,6 +2,7 @@ package com.kacwol.manageYourBudget.category.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kacwol.manageYourBudget.user.model.User;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,8 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
     @Id

@@ -13,9 +13,9 @@ import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
 
 @Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 public class BudgetPlanElement {
 
     @Id

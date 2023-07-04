@@ -1,6 +1,5 @@
 package com.kacwol.manageYourBudget.budgetchange.service;
 
-import com.kacwol.manageYourBudget.AuthService;
 import com.kacwol.manageYourBudget.budgetchange.BudgetChangeRepo;
 import com.kacwol.manageYourBudget.budgetchange.ExpenseRepo;
 import com.kacwol.manageYourBudget.budgetchange.IncomeRepo;
@@ -14,9 +13,9 @@ import com.kacwol.manageYourBudget.category.model.Category;
 import com.kacwol.manageYourBudget.category.service.CategoryServiceImpl;
 import com.kacwol.manageYourBudget.exception.BadDatesException;
 import com.kacwol.manageYourBudget.exception.BudgetChangeNotFoundException;
+import com.kacwol.manageYourBudget.user.service.AuthService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -41,65 +40,65 @@ public class BudgetChangeServiceImpl implements BudgetChangeService {
 
 
     @Override
-    public void addBudgetChange(Authentication authentication, BudgetChangeDto budgetChange) {
-        Category category = categoryService.getCategoryById(authentication, budgetChange.getCategoryId());
+    public void addBudgetChange(BudgetChangeDto budgetChange) {
+        Category category = categoryService.getCategoryById(budgetChange.getCategoryId());
         budgetChangeRepo.save(mapper.dtoToEntity(budgetChange, category));
     }
 
     @Override
-    public BudgetChangeResponseDto getBudgetChangeById(Authentication authentication, Long id) {
-        BudgetChange change = budgetChangeRepo.findByIdAndUserId(id, authService.getId(authentication)).orElseThrow(BudgetChangeNotFoundException::new);
+    public BudgetChangeResponseDto getBudgetChangeById(Long id) {
+        BudgetChange change = budgetChangeRepo.findByIdAndUserId(id, authService.getId()).orElseThrow(BudgetChangeNotFoundException::new);
         return mapper.entityToResponseDto(change);
     }
 
     @Override
-    public void deleteBudgetChangeById(Authentication authentication, Long id) {
-        budgetChangeRepo.deleteByIdAndUserId(id, authService.getId(authentication));
+    public void deleteBudgetChangeById(Long id) {
+        budgetChangeRepo.deleteByIdAndUserId(id, authService.getId());
     }
 
     @Override
-    public List<BudgetChange> getAllBudgetChanges(Authentication authentication) {
-        return budgetChangeRepo.findAllByUserId(authService.getId(authentication));
+    public List<BudgetChange> getAllBudgetChanges() {
+        return budgetChangeRepo.findAllByUserId(authService.getId());
     }
 
     @Override
-    public List<BudgetChange> getAllBudgetChanges(Authentication auth, LocalDate startDate, LocalDate endDate) {
+    public List<BudgetChange> getAllBudgetChanges(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new BadDatesException("Start date cannot be later than end date.");
         } else {
-            return budgetChangeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(auth), startDate, endDate);
+            return budgetChangeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(), startDate, endDate);
         }
     }
 
     @Override
-    public LinkedList<Expense> getAllExpenses(Authentication auth, LocalDate startDate, LocalDate endDate) {
+    public LinkedList<Expense> getAllExpenses(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new BadDatesException("Start date cannot be later than end date.");
         } else {
-            return expenseRepo.findAllByUserIdAndDateTimeBetween(authService.getId(auth), startDate, endDate);
+            return expenseRepo.findAllByUserIdAndDateTimeBetween(authService.getId(), startDate, endDate);
         }
     }
 
     @Override
-    public LinkedList<Income> getAllIncomes(Authentication auth, LocalDate startDate, LocalDate endDate) {
+    public LinkedList<Income> getAllIncomes(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new BadDatesException("Start date cannot be later than end date.");
         } else {
-            return incomeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(auth), startDate, endDate);
+            return incomeRepo.findAllByUserIdAndDateTimeBetween(authService.getId(), startDate, endDate);
         }
     }
 
     @Override
-    public List<BudgetChange> getAllByUserIdAndCategoryId(Authentication authentication, Long categoryId) {
-        return budgetChangeRepo.findAllByUserIdAndCategoryId(authService.getId(authentication), categoryId);
+    public List<BudgetChange> getAllByUserIdAndCategoryId(Long categoryId) {
+        return budgetChangeRepo.findAllByUserIdAndCategoryId(authService.getId(), categoryId);
     }
 
     @Override
-    public List<BudgetChange> getAllByUserIdAndCategoryIdBetweenDates(Authentication authentication, AllBudgetChangesByCategoryAndTimeDto dto) {
+    public List<BudgetChange> getAllByUserIdAndCategoryIdBetweenDates(AllBudgetChangesByCategoryAndTimeDto dto) {
         if (dto.getStart().isAfter(dto.getEnd())) {
             throw new BadDatesException("Start date cannot be later than end date.");
         } else {
-            return budgetChangeRepo.findAllByUserIdAndCategoryIdAndDateTimeBetween(authService.getId(authentication), dto.getCategoryId(), dto.getStart(), dto.getEnd());
+            return budgetChangeRepo.findAllByUserIdAndCategoryIdAndDateTimeBetween(authService.getId(), dto.getCategoryId(), dto.getStart(), dto.getEnd());
         }
     }
 }

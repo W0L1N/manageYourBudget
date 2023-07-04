@@ -6,8 +6,9 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 
-@AllArgsConstructor
+
 @Getter
+@AllArgsConstructor
 public class BudgetPlanRequestElement {
 
     private CategoryDto category;

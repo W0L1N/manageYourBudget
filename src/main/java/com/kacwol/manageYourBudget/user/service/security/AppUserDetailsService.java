@@ -1,4 +1,4 @@
-package com.kacwol.manageYourBudget.security;
+package com.kacwol.manageYourBudget.user.service.security;
 
 import com.kacwol.manageYourBudget.user.model.User;
 import com.kacwol.manageYourBudget.user.service.UserRepo;
@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AppUserDetailsService implements UserDetailsService {
 
     private final UserRepo userRepo;
+
+
 
     public AppUserDetailsService(UserRepo userRepo, PasswordEncoder encoder) {
         this.userRepo = userRepo;

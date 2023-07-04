@@ -13,7 +13,6 @@ import com.kacwol.manageYourBudget.category.service.CategoryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,19 +31,16 @@ public class BudgetReportService {
 
     private final BudgetChangeService budgetChangeService;
 
-    @SuppressWarnings("checkstyle:WhitespaceAfter")
-    public BudgetReportResponse makeReportResponse(Authentication auth, BudgetReportRequest reportRequest) {
+    public BudgetReportResponse makeReportResponse(BudgetReportRequest reportRequest) {
 
-        List<Category> categories = categoryService.getAllCategories(auth);
+        List<Category> categories = categoryService.getAllCategories();
 
         List<Expense> expenses = budgetChangeService.getAllExpenses(
-                auth,
                 reportRequest.getStartDate(),
                 reportRequest.getEndDate()
         );
 
         LinkedList<Income> incomes = budgetChangeService.getAllIncomes(
-                auth,
                 reportRequest.getStartDate(),
                 reportRequest.getEndDate()
         );
@@ -86,22 +82,20 @@ public class BudgetReportService {
         return new BudgetReportResponse(reportRequest.getStartDate(), reportRequest.getEndDate(), expense, income, sum, elements);
     }
 
-    public BudgetReportResponse makeReportResponseForYear(Authentication auth, int year) {
+    public BudgetReportResponse makeReportResponseForYear(int year) {
         return makeReportResponse(
-                auth,
                 new BudgetReportRequest(
                         LocalDate.of(year, 1, 1),
                         LocalDate.of(year, 12, 31)
                 ));
     }
 
-    public BudgetReportResponse makeReportResponseForMonth(Authentication auth, int year, int month) {
+    public BudgetReportResponse makeReportResponseForMonth(int year, int month) {
         LocalDate date = LocalDate.of(year, month, 1);
         LocalDate lastDayOfMonthDate = date.withDayOfMonth(
                 date.getMonth().length(date.isLeapYear()));
 
         return makeReportResponse(
-                auth,
                 new BudgetReportRequest(
                         LocalDate.of(year, month, 1),
                         LocalDate.of(year, month, lastDayOfMonthDate.getDayOfMonth())
