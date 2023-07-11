@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractAu
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
 import java.util.Set;
 
 @Configuration
@@ -39,11 +40,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests((autz) -> {
+                .authorizeHttpRequests((autz) -> {
                     try {
                         autz
-                                .antMatchers("/h2-console").hasRole("ADMIN")
-                                .antMatchers("/register").permitAll()
+                                .requestMatchers("/h2-console").hasRole("ADMIN")
+                                .requestMatchers("/register").permitAll()
                                 .anyRequest().authenticated()
                                 .and()
                                 .httpBasic()
